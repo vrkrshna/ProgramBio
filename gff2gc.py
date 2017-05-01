@@ -30,8 +30,15 @@ def nuc_freq(sequence,base,sig_digs=2):
 	freq_of_base=count_of_base/length
 	# return the frequency and the length
 	return(length,round(freq_of_base,sig_digs))	
+	
+	
+#key=gene na,e, value- another dictionary [ke=exon number, value= exon sequence]
+#gene_sequences[cox1][1]='the sequence for first exon of cox1'
+#gene_sequences[cox1][2]='the sequence for second exon of cox1'	
+	
 
 feature_sequences = {}	
+gene_sequences={}
 	
 # Read FASTA file
 data1 = open(genome, 'r')
@@ -86,6 +93,15 @@ for line in data2:
     # extract this feature from the genome
     fragment = gen[start-1:end]
     fragment=clean_seq(fragment)
+    
+    #get the gene name
+    if (type=='CDS'):
+    
+    	attributes=cols[8].split(';')
+#    	print(attributes[0])
+    	
+    	gene_fields = attributes[0].split(' ')
+    	print(gene_fields)
     
     if type in feature_sequences:
     	feature_sequences[type] +=fragment
@@ -150,4 +166,4 @@ for line in data2:
 data2.close()
 
 for feature, sequence in feature_sequences.items():
-	print(feature+"\t"+str(len(sequence)+"\t"+str()))
+	print(feature+"\t"+str(len(sequence)))
