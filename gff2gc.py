@@ -16,8 +16,7 @@ if len(sys.argv) < 3:
 genome = sys.argv[1]
 gff    = sys.argv[2]
 
-list_of_features={'CDS','IN','MF','RR','rRNA','tRNA'}
-nts={'A','T','G','C'}
+
 def clean_seq(input_seq):
 	clean=input_seq.upper()
 	clean=clean.replace('N','')
@@ -31,6 +30,9 @@ def nuc_freq(sequence,base,sig_digs=2):
 	freq_of_base=count_of_base/length
 	# return the frequency and the length
 	return(length,round(freq_of_base,sig_digs))	
+
+feature_sequences = {}	
+	
 # Read FASTA file
 data1 = open(genome, 'r')
 
@@ -83,18 +85,19 @@ for line in data2:
 
     # extract this feature from the genome
     fragment = gen[start-1:end]
-    for feature_type in list_of_features:
-    	if type==feature_type:
-    		feature_type+=fragment
-    		print(feature_type)
-    	for nucleotide in nts:
-    		(feature_length,feature_comp)=nuc_freq(feature_type,nucleotide,sig_digs=2)
-#     		print(feature_type,feature_length,feature_comp)
+    fragment=clean_seq(fragment)
+    
+    if type in feature_sequences:
+    	feature_sequences[type] +=fragment
+    else:
+    	feature_sequences[type]=fragment
+    
+    
 
-   #  if type == 'CDS':
+    # if type == 'CDS':
 #         CDS += fragment
-
-    # if type == 'intron':
+# 
+#     if type == 'intron':
 #         IN += fragment
 # 
 #     if type == 'misc_feature':
@@ -118,7 +121,7 @@ for line in data2:
 # trna = len(tRNA)
 # rrna = len(rRNA)
 # 
-# # GC Content
+# GC Content
 # GC_CDS = round((CDS.count('G') + CDS.count('C'))/exon*100, 2)
 # GC_RR  = round((RR.count('G') + RR.count('C'))/repeat*100, 2)
 # GC_MF  = round((MF.count('G') + MF.count('C'))/misc*100, 2)
@@ -127,7 +130,7 @@ for line in data2:
 # GC_rRNA  = round((rRNA.count('G') + rRNA.count('C'))/rrna*100, 2)
 # 
 # 
-# # Percent of the genome covered by featured type
+# Percent of the genome covered by featured type
 # exon1 = round(exon/gen1*100, 2)
 # intron1 = round(intron/gen1*100, 2)
 # misc1 = round(misc/gen1*100, 2)
@@ -135,7 +138,7 @@ for line in data2:
 # tr = round(trna/gen1*100, 2)
 # rr = round(rrna/gen1*100, 2)
 # 
-# # Print the output
+# Print the output
 # print('CDS', exon, str(exon1) + '%', str(GC_CDS))
 # print('Intron', intron, str(intron1) + '%', str(GC_IN))
 # print('Misc Features', misc, str(misc1) + '%', str(GC_MF))
@@ -145,3 +148,6 @@ for line in data2:
 
 # close the GFF file
 data2.close()
+
+for feature, sequence in feature_sequences.items():
+	print(feature+"\t"+str(len(sequence)+"\t"+str()))
