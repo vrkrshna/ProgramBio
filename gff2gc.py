@@ -16,7 +16,21 @@ if len(sys.argv) < 3:
 genome = sys.argv[1]
 gff    = sys.argv[2]
 
-
+list_of_features={'CDS','IN','MF','RR','rRNA','tRNA'}
+nts={'A','T','G','C'}
+def clean_seq(input_seq):
+	clean=input_seq.upper()
+	clean=clean.replace('N','')
+	return clean
+ 
+def nuc_freq(sequence,base,sig_digs=2):
+	# calculate the length of the sequence 
+	length=len(sequence)
+	# calculate the number of nucleotide
+	count_of_base=sequence.count(base)
+	freq_of_base=count_of_base/length
+	# return the frequency and the length
+	return(length,round(freq_of_base,sig_digs))	
 # Read FASTA file
 data1 = open(genome, 'r')
 
@@ -69,58 +83,65 @@ for line in data2:
 
     # extract this feature from the genome
     fragment = gen[start-1:end]
+    for feature_type in list_of_features:
+    	if type==feature_type:
+    		feature_type+=fragment
+    		print(feature_type)
+    	for nucleotide in nts:
+    		(feature_length,feature_comp)=nuc_freq(feature_type,nucleotide,sig_digs=2)
+#     		print(feature_type,feature_length,feature_comp)
 
-    if type == 'CDS':
-        CDS += fragment
+   #  if type == 'CDS':
+#         CDS += fragment
 
-    if type == 'intron':
-        IN += fragment
-
-    if type == 'misc_feature':
-        MF += fragment
-
-    if type == 'repeat_region':
-        RR += fragment
-
-    if type == 'rRNA':
-        rRNA += fragment
-
-    if type == 'tRNA':
-        tRNA += fragment
+    # if type == 'intron':
+#         IN += fragment
+# 
+#     if type == 'misc_feature':
+#         MF += fragment
+# 
+#     if type == 'repeat_region':
+#         RR += fragment
+# 
+#     if type == 'rRNA':
+#         rRNA += fragment
+# 
+#     if type == 'tRNA':
+#         tRNA += fragment
 
 # Length of feature types and genome sequence
-gen1 = len(gen)
-exon = len(CDS)
-intron = len(IN)
-misc = len(MF)
-repeat = len(RR)
-trna = len(tRNA)
-rrna = len(rRNA)
-
-# GC Content
-GC_CDS = round((CDS.count('G') + CDS.count('C'))/exon*100, 2)
-GC_RR  = round((RR.count('G') + RR.count('C'))/repeat*100, 2)
-GC_MF  = round((MF.count('G') + MF.count('C'))/misc*100, 2)
-GC_IN  = round((IN.count('G') + IN.count('C'))/intron*100, 2)
-GC_tRNA  = round((tRNA.count('G') + tRNA.count('C'))/trna*100, 2)
-GC_rRNA  = round((rRNA.count('G') + rRNA.count('C'))/rrna*100, 2)
-
-
-# Percent of the genome covered by featured type
-exon1 = round(exon/gen1*100, 2)
-intron1 = round(intron/gen1*100, 2)
-misc1 = round(misc/gen1*100, 2)
-repeat1 = round(repeat/gen1*100, 2)
-tr = round(trna/gen1*100, 2)
-rr = round(rrna/gen1*100, 2)
-
-# Print the output
-print('CDS', exon, str(exon1) + '%', str(GC_CDS))
-print('Intron', intron, str(intron1) + '%', str(GC_IN))
-print('Misc Features', misc, str(misc1) + '%', str(GC_MF))
-print('Repeat Region', repeat, str(repeat1) + '%', str(GC_RR))
-print('tRNA', trna, str(tr) + '%', str(GC_tRNA))
-print('rRNA', rrna, str(rr) + '%', str(GC_rRNA))
+# gen1 = len(gen)
+# exon = len(CDS)
+# intron = len(IN)
+# misc = len(MF)
+# repeat = len(RR)
+# trna = len(tRNA)
+# rrna = len(rRNA)
+# 
+# # GC Content
+# GC_CDS = round((CDS.count('G') + CDS.count('C'))/exon*100, 2)
+# GC_RR  = round((RR.count('G') + RR.count('C'))/repeat*100, 2)
+# GC_MF  = round((MF.count('G') + MF.count('C'))/misc*100, 2)
+# GC_IN  = round((IN.count('G') + IN.count('C'))/intron*100, 2)
+# GC_tRNA  = round((tRNA.count('G') + tRNA.count('C'))/trna*100, 2)
+# GC_rRNA  = round((rRNA.count('G') + rRNA.count('C'))/rrna*100, 2)
+# 
+# 
+# # Percent of the genome covered by featured type
+# exon1 = round(exon/gen1*100, 2)
+# intron1 = round(intron/gen1*100, 2)
+# misc1 = round(misc/gen1*100, 2)
+# repeat1 = round(repeat/gen1*100, 2)
+# tr = round(trna/gen1*100, 2)
+# rr = round(rrna/gen1*100, 2)
+# 
+# # Print the output
+# print('CDS', exon, str(exon1) + '%', str(GC_CDS))
+# print('Intron', intron, str(intron1) + '%', str(GC_IN))
+# print('Misc Features', misc, str(misc1) + '%', str(GC_MF))
+# print('Repeat Region', repeat, str(repeat1) + '%', str(GC_RR))
+# print('tRNA', trna, str(tr) + '%', str(GC_tRNA))
+# print('rRNA', rrna, str(rr) + '%', str(GC_rRNA))
 
 # close the GFF file
 data2.close()
